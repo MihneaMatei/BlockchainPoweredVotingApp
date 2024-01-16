@@ -214,32 +214,47 @@ const voteStatus = async() => {
 }
 
 const getAllCandidates = async() => {
-    if(WALLET_CONNECTED != 0) {
-        var p3 = document.getElementById("p3");
-        const provider = new ethers.providers.Web3Provider(window.ethereum);
-        await provider.send("eth_requestAccounts", []);
-        const signer = provider.getSigner();
-        const contractInstance = new ethers.Contract(contractAddress, contractAbi, signer);
-        p3.innerHTML = "Please wait, getting all the candidates from the voting smart contract";
-        var candidates = await contractInstance.getAllVotesOfCandiates();
-        console.log(candidates);
-        var table = document.getElementById("myTable");
+  if(WALLET_CONNECTED != 0) {
+    var p3 = document.getElementById("p3");
+    const provider = new ethers.providers.Web3Provider(window.ethereum);
+    await provider.send("eth_requestAccounts", []);
+    const signer = provider.getSigner();
+    const contractInstance = new ethers.Contract(contractAddress, contractAbi, signer);
 
-        for (let i = 0; i < candidates.length; i++) {
-            var row = table.insertRow();
-            var idCell = row.insertCell();
-            var descCell = row.insertCell();
-            var statusCell = row.insertCell();
-
-            idCell.innerHTML = i;
-            descCell.innerHTML = candidates[i].name;
-            statusCell.innerHTML = candidates[i].voteCount;
-        }
-
-        p3.innerHTML = "The tasks are updated"
+    // Check if the table is already populated
+    var table = document.getElementById("myTable");
+    if (table.rows.length > 1) {
+      // Table is already populated, do nothing
+      p3.innerHTML = "The candidates are already listed";
+      return;
     }
-    else {
-        var p3 = document.getElementById("p3");
-        p3.innerHTML = "Please connect metamask first";
+
+    p3.innerHTML = "Please wait, getting all the candidates from the voting smart contract";
+    var candidates = await contractInstance.getAllVotesOfCandiates();
+    console.log(candidates);
+
+    for (let i = 0; i < candidates.length; i++) {
+      var row = table.insertRow();
+      var idCell = row.insertCell();
+      var descCell = row.insertCell();
+      var statusCell = row.insertCell();
+
+      idCell.innerHTML = i;
+      descCell.innerHTML = candidates[i].name;
+      statusCell.innerHTML = candidates[i].voteCount;
     }
+
+    p3.innerHTML = "The candidates are updated";
+  } else {
+    var p3 = document.getElementById("p3");
+    p3.innerHTML = "Please connect metamask first";
+  }
 }
+
+const refreshCandidates = async() => {
+  var table = document.getElementById("myTable");
+  while(table.rows.length > 1) {
+    table.deleteRow(1);
+  }
+  getAllCandidates();
+};
