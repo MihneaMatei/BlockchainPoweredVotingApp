@@ -258,3 +258,43 @@ const refreshCandidates = async() => {
   }
   getAllCandidates();
 };
+
+const getAllVoters = async () => {
+  if (WALLET_CONNECTED !== "") {
+    var votersTable = document.getElementById("votersTable");
+    var votersTableBody = document.getElementById("votersTableBody");
+    if (votersTableBody.rows.length > 0) {
+      // Table is already populated, do nothing
+      return;
+    }
+    while (votersTableBody.rows.length > 0) {
+      votersTableBody.deleteRow(0);
+    }
+    const provider = new ethers.providers.Web3Provider(window.ethereum);
+    await provider.send("eth_requestAccounts", []);
+    const signer = provider.getSigner();
+    const contractInstance = new ethers.Contract(contractAddress, contractAbi, signer);
+
+    var voters = await contractInstance.getVoterAddresses();
+
+    for (let i = 0; i < voters.length; i++) {
+      var row = votersTableBody.insertRow();
+      var indexCell = row.insertCell();
+      var addressCell = row.insertCell();
+
+      indexCell.textContent = i + 1;
+      addressCell.textContent = voters[i];
+    }
+  } else {
+    console.error("Please connect metamask first");
+  }
+}
+
+const refreshVoters = async () => {
+  var votersTable = document.getElementById("votersTable");
+  var votersTableBody = document.getElementById("votersTableBody");
+  while (votersTableBody.rows.length > 0) {
+    votersTableBody.deleteRow(0);
+  }
+  getAllVoters();
+};
