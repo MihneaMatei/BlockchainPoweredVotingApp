@@ -12,16 +12,26 @@ The interface of the application is developed using HTML and JavaScript in order
 
 This voting system highlights the potential of blockchain technology in improving the integrity of the democratic process of voting. It underscores the power of using smart contracts in complex processes, while also reducing the need of intermediaries and single points of failure. Using the Volta network, the application makes use of its scalability and cost-effective environment for decentralized applications (dApps). 
 
+To install all dependencies, run
+```shell
+npm install
+```
+
 To compile and deploy the smart contract use:
 ```shell
 npx hardhat compile
 npx hardhat run --network volta scripts/deploy.js
 ```
 
+After the contract is deployed, the contract binary interface (ABI) must be copied from /artifacts/contracts/Voting.json (artifacts generated at deploy) to main.js file
 To run the project follow the instructions:
 ```shell
-npm install
-
 # Before running the private key and contract address need to be pasted in the .env file
+# The contract address must also be copied in the main.js file
+
+# To start the project, which will run on localhost:3000
 npm start
+
+# You can also use the following command
+node index.js
 ```
